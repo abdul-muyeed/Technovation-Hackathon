@@ -8,7 +8,7 @@ import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { randomBytes } from 'crypto';
-import { and, eq, InferSelectModel } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import {
   AuthUser,
   LoginCredentials,
@@ -32,25 +32,23 @@ export class AuthService {
   ) {}
   // // validate user crendential
   async validateUser(credential: LoginCredentials): Promise<AuthUser> {
-    let user: InferSelectModel<typeof schema.userSchema>;
-    let userRole: Role;
     if (!credential.username || !credential.password) {
       throw new UnauthorizedException('Username and password are required');
     }
     const users = await this.db
       .select()
       .from(this.userTable)
-      .where(
-        and(
-          eq(this.userTable.email, credential.username),
-          eq(this.userTable.role, credential.role || Role.USER),
-        ),
-      )
+      .where(and(eq(this.userTable.email, credential.username)))
       .limit(1);
-    if (users.length === 0) {
+    const user = users[0];
+    if (!user) {
       throw new UnauthorizedException('Invalid Credential');
     }
-    user = users[0];
+    const isValid = await argon.verify(users[0].password, credential.password);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid Credential');
+    }
+
     return {
       id: user!.id,
       name: user!.email[0],
@@ -155,7 +153,7 @@ export class AuthService {
       .limit(1);
 
     if (existingUser.length > 0) {
-      throw new UnauthorizedException('Email already exists');
+      throw new UnauthorizedException('Invalid Credential');
     }
 
     const hashedPassword = await argon.hash(password);

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   HttpCode,
   HttpStatus,
@@ -12,6 +13,7 @@ import { Response } from 'express';
 import { Public } from 'src/core/decorators';
 import { JwtAuthGuard } from 'src/core/guard';
 import { AuthService } from './auth.service';
+import { RegisterUserDto } from './dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -45,5 +47,11 @@ export class AuthController {
       message: 'Logout Successfully',
       code: HttpStatus.OK,
     });
+  }
+
+  @Post('register')
+  @Public()
+  async registerUser(@Body() body: RegisterUserDto) {
+    return await this.authService.registerUser(body);
   }
 }

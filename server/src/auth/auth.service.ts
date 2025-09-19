@@ -19,6 +19,7 @@ import { DRIZZLE_TOKEN } from 'src/drizzle/drizzle.provider';
 import * as schema from 'src/drizzle/schema';
 import { Database } from 'src/drizzle/schema.type';
 import refresh_jwtConfig from './config/refresh.config';
+import { RegisterUserDto } from './dto/user.dto';
 @Injectable()
 export class AuthService {
   userTable = schema.userSchema;
@@ -149,5 +150,34 @@ export class AuthService {
     //   throw new UnauthorizedException('Invalid Credential');
     // }
     return payload;
+  }
+
+  async registerUser(body: RegisterUserDto) {
+    const { email, password } = body;
+    const existingUser = await this.db
+      .select()
+      .from(this.userTable)
+      .where(eq(this.userTable.email, email))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      throw new UnauthorizedException('Email already exists');
+    }
+
+    const hashedPassword = await argon.hash(password);
+    const newUser = {
+      email,
+      password: hashedPassword,
+    };
+
+    const result = await this.db
+      .insert(this.userTable)
+      .values(newUser)
+      .returning();
+
+    return {
+      message: 'User registered successfully',
+      userId: result[0].id,
+    };
   }
 }

@@ -46,7 +46,6 @@ export default function Page() {
       password: password,
       role: 'USER',
     }
-    console.log(form);
     mutation.mutate({form})
   };
 

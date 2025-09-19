@@ -9,6 +9,7 @@ import {
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import MainAppBar from './MainAppBar';
 
 
 
@@ -19,12 +20,15 @@ const userInitials:User = {
 
 export default function Providers(
     {
-        children
+        children,
+        token,
     }:
     Readonly<{
-        children: React.ReactNode
+        children: React.ReactNode,
+        token: string | null
     }>
 ){
+    userInitials.token = token;
     const queryClient = new QueryClient();
     const store = reduxStore({userInitials});
     return (
@@ -32,6 +36,7 @@ export default function Providers(
             <Provider store={store}>
                 <AppRouterCacheProvider>
                     <Toaster />
+                    <MainAppBar />
                     {children}
                 </AppRouterCacheProvider>
             </Provider>

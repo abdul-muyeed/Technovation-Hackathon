@@ -21,9 +21,10 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.userService.findOne(id);
+  @Get('details')
+  findOne(@Req() req) {
+    const userId= req.user.id;
+    return this.userService.findOne(userId);
   }
 
   @Patch(':id')

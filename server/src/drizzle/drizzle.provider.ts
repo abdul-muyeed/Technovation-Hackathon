@@ -1,6 +1,7 @@
+import { neon } from '@neondatabase/serverless';
 import { ConfigService } from '@nestjs/config';
-import { drizzle } from 'drizzle-orm/node-postgres';
-import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/neon-http';
+import * as schema from './schema'; // Adjust the path as needed
 export const DRIZZLE_TOKEN = 'DRIZZLE_CONNECTION';
 
 export const drizzleProvider = [
@@ -16,19 +17,19 @@ export const drizzleProvider = [
         );
       }
       try {
-        const connection = new Pool({
-          connectionString: databaseUrl,
-        });
-        const db = drizzle({
-          client: connection,
-        });
-        // Test the connection immediately
-        // const connection = neon(databaseUrl);
-        // return drizzle(connection, {
-        //   schema,
-        //   logger: env == 'development' ? true : false,
+        // const connection = new Pool({
+        //   connectionString: databaseUrl,
         // });
-        return db;
+        // const db = drizzle({
+        //   client: connection,
+        // });
+        // Test the connection immediately
+        const connection = neon(databaseUrl);
+        return drizzle(connection, {
+          schema,
+          logger: env == 'development' ? true : false,
+        });
+        // return db;
       } catch (error) {
         throw new Error(`Failed to connect to database: ${error.message}`);
       }

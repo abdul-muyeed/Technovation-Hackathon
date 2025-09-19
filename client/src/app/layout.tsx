@@ -1,18 +1,20 @@
 
 import Providers from '@/components/Providers';
 import '@/globals.css'
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { cookies } from 'next/headers';
 
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cooki = await cookies();
+  const token = cooki.get('access_token')?.value ?? null;
   return (
     <html lang="en">
       <body>
-        <Providers>
+        <Providers token={token}>
             {children}
         </Providers>
       </body>

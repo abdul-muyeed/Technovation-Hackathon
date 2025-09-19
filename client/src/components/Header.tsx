@@ -1,5 +1,6 @@
 'use client'
 import styles from '@/styles/main.module.scss';
+import { Link } from 'lucide-react';
 
 export default function Header(){
     const isLoggedIn = false;
@@ -50,7 +51,8 @@ export default function Header(){
                     </svg>0.0
                 </button>
 
-                <button
+                <Link
+                href='/login'
                 className={styles.btn}
                 >
                     <svg
@@ -58,7 +60,7 @@ export default function Header(){
                     >
                         <use href="/sprite.svg#icon-enter" />
                     </svg>Login
-                </button>
+                </Link>
             </div>
         </header>
     );

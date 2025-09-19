@@ -1,8 +1,8 @@
-import { LoginForm } from "@/types/types";
+import { RegisterForm } from "@/types/types";
 import { domain } from "@/utils/backendDomain";
 
-export default async function loginUser({form}: {form: LoginForm}){
-    const url = `${domain}/auth/login`;
+export default async function registerUser({form}:{form: RegisterForm}){
+    const url = `${domain}/auth/register`;
     const response = await fetch(url, {
         method: "POST",
         credentials: 'include',
@@ -16,5 +16,5 @@ export default async function loginUser({form}: {form: LoginForm}){
         throw data['message'];
     }
 
-    return data['data'];
+    return data['message'];
 }

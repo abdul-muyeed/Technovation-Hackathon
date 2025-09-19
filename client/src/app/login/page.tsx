@@ -12,8 +12,9 @@ import { useMutation } from "@tanstack/react-query";
 import loginUser from "@/actions/loginUser";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { loginForm } from "@/types/types";
+import { LoginForm } from "@/types/types";
 import { useAppDispatch } from "@/redux/reduxStore";
+import { setUser } from "@/redux/userSlice";
 
 export default function Page() {
   const [email, setEmail] = useState("");
@@ -26,6 +27,9 @@ export default function Page() {
   const mutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
+      const userName = null;
+      const token = data['access_token'];
+      dispatch(setUser({userName, token}));
       toast.success('login successfull!');
       router.push('/');
     },
@@ -36,9 +40,10 @@ export default function Page() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const form: loginForm = {
+    const form: LoginForm = {
       username: email,
       password: password,
+      role: 'USER',
     }
     mutation.mutate({form})
   };

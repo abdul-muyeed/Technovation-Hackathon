@@ -15,7 +15,7 @@ export default function Home() {
           <Typography variant="h6" sx={{ fontWeight: "bold" }}>
             ♻ RecycleHub
           </Typography>
-          <Box>
+          <Box sx={{ display: "flex", gap: 2 }}>
             <Link
             href="/login"
             >

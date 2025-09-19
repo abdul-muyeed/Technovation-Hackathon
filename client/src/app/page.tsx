@@ -1,71 +1,16 @@
 "use client";
 
 import LogoutBtn from '@/components/LogoutBtn';
+import MainAppBar from '@/components/MainAppBar';
 import { useAppSelector } from '@/redux/reduxStore';
 import { AppBar, Toolbar, Typography, Button, Container, Box, Grid, Paper } from '@mui/material'
+import { wrap } from 'module';
 import Link from 'next/link';
 
 export default function Home() {
   const token = useAppSelector(state => state.user.token);
   return (
     <div>
-      {/* Header */}
-      <AppBar position="static" color="success" elevation={0}>
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            ♻ RecycleHub
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2 }}>
-            <Link
-            href="/login"
-            >
-              {
-                !token && (
-                  <>
-                    <Button color="inherit" sx={{ mr: 2 }}>
-                      Login
-                    </Button>
-                  </>
-                )
-              }
-            </Link>
-            <Link
-            href='/register'
-            >
-              {
-                !token && (
-                  <>
-                    <Button variant="contained" color="secondary">
-                      Register
-                    </Button>
-                  </>
-                )
-              }
-            </Link>
-            <Link
-            href='/green-lens'
-            >
-              {
-                token && (
-                  <>
-                    <Button variant="contained" color="secondary">
-                      GreenLens
-                    </Button>
-                  </>
-                )
-              }
-            </Link>
-            {
-              token && (
-                <>
-                  <LogoutBtn/>
-                </>
-              )
-            }
-          </Box>
-        </Toolbar>
-      </AppBar>
-
       {/* Hero Section */}
       <Box
         sx={{
@@ -89,8 +34,8 @@ export default function Home() {
       </Box>
 
       {/* Features Section */}
-      <Container sx={{ py: 8 }}>
-        <Grid container spacing={4}>
+      <Container sx={{ py: 12 }}>
+        <Grid container spacing={8}>
           {[
             {
               title: "Track Recycling",
@@ -105,7 +50,7 @@ export default function Home() {
               desc: "Connect with like-minded people working for a greener planet.",
             },
           ].map((feature, idx) => (
-            <Grid item xs={12} md={4} key={idx}>
+            <Grid item xs={12} md={2} key={idx} width={300}>
               <Paper
                 elevation={3}
                 sx={{

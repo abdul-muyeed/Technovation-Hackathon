@@ -26,6 +26,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import RecyclingIcon from "@mui/icons-material/Recycling";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import { useAppSelector } from "@/redux/reduxStore";
 
 type RecyclingInfo = {
   category: string;
@@ -36,6 +37,7 @@ type RecyclingInfo = {
 };
 
 export default function Page() {
+  const token = useAppSelector(state=>state.user.token);
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const theme = useTheme();
@@ -63,6 +65,14 @@ export default function Page() {
     form.append("file", file);
     mutation.mutate({ form });
   };
+
+  if(token === null){
+    return (
+      <div>
+        you need to be logged in to use this features.
+      </div>
+    );
+  }
 
   return (
     <Container maxWidth="md">

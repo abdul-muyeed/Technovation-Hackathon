@@ -5,7 +5,6 @@ export type LoginType = 'admin' | 'user';
 export interface LoginCredentials {
   username: string;
   password: string;
-  role: Role;
 }
 
 export interface AuthUser {

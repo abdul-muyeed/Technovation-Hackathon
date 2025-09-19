@@ -24,17 +24,17 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async loginUser(@Req() req, @Res() res: Response) {
-    console.log('Login request:', req.body);
     const token = await this.authService.login(req.user);
-    res.cookie('access_token', token, {
+    res.cookie('access_token', token.access_token, {
       httpOnly: true,
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: 100 * 60 * 1000, // 100 minutes
       secure: process.env.NODE_ENV === 'production',
     });
+    console.log(req.user);
     return res.status(HttpStatus.OK).send({
       message: 'Login Successfully',
-      code: HttpStatus.OK,
+      user: req.user,
       data: token,
     });
   }
@@ -44,7 +44,7 @@ export class AuthController {
   @Post('logout')
   async logout(@Res() res: Response) {
     res.clearCookie('access_token');
-    return res.sendStatus(200).send({
+    return res.status(200).send({
       message: 'Logout Successfully',
       code: HttpStatus.OK,
     });
@@ -54,10 +54,5 @@ export class AuthController {
   @Public()
   async registerUser(@Body() body: RegisterUserDto) {
     return await this.authService.registerUser(body);
-  }
-
-  @Public()
-  async getUser() {
-    return await this.authService.getUsers();
   }
 }

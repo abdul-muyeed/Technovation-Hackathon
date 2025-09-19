@@ -42,6 +42,19 @@ export default function Home() {
                 )
               }
             </Link>
+            <Link
+            href='/green-lens'
+            >
+              {
+                token && (
+                  <>
+                    <Button variant="contained" color="secondary">
+                      GreenLens
+                    </Button>
+                  </>
+                )
+              }
+            </Link>
             {
               token && (
                 <>

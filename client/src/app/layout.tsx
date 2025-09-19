@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Nav from '@/components/Nav';
 import '@/globals.css'
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 
 export default function RootLayout({
@@ -11,9 +12,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Header/>
-        <Nav/>
-        {children}
+        <AppRouterCacheProvider>
+           {children}
++        </AppRouterCacheProvider>
       </body>
     </html>
   );

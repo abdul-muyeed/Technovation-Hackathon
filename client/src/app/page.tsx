@@ -1,9 +1,12 @@
 "use client";
 
+import LogoutBtn from '@/components/LogoutBtn';
+import { useAppSelector } from '@/redux/reduxStore';
 import { AppBar, Toolbar, Typography, Button, Container, Box, Grid, Paper } from '@mui/material'
 import Link from 'next/link';
 
 export default function Home() {
+  const token = useAppSelector(state => state.user.token);
   return (
     <div>
       {/* Header */}
@@ -16,17 +19,36 @@ export default function Home() {
             <Link
             href="/login"
             >
-              <Button color="inherit" sx={{ mr: 2 }}>
-                Login
-              </Button>
+              {
+                !token && (
+                  <>
+                    <Button color="inherit" sx={{ mr: 2 }}>
+                      Login
+                    </Button>
+                  </>
+                )
+              }
             </Link>
             <Link
             href='/register'
             >
-              <Button variant="contained" color="secondary">
-                Register
-              </Button>
+              {
+                !token && (
+                  <>
+                    <Button variant="contained" color="secondary">
+                      Register
+                    </Button>
+                  </>
+                )
+              }
             </Link>
+            {
+              token && (
+                <>
+                  <LogoutBtn/>
+                </>
+              )
+            }
           </Box>
         </Toolbar>
       </AppBar>

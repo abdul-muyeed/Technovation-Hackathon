@@ -8,11 +8,16 @@ import {
   Container,
   Paper,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import registerUser from "@/actions/registerUser";
+import toast from "react-hot-toast";
+import { RegisterForm } from "@/types/types";
 
 export default function Page() {
-  const [form, setForm] = useState({
-    firstname: "",
-    lastname: "",
+  const [form, setForm] = useState<RegisterForm>({
+    firstName: null,
+    lastName: null,
     email: "",
     password: "",
   });
@@ -21,10 +26,22 @@ export default function Page() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const router = useRouter();
+  const mutation = useMutation({
+    mutationFn: registerUser,
+    onSuccess: (data:string)=>{
+      toast.success(data);
+      router.push('/login');
+    },
+    onError: (err:string)=>{
+      toast.error(err);
+    }
+  })
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: handle registration logic
-    console.log(form);
+    mutation.mutate({form});
   };
 
   return (
@@ -62,8 +79,8 @@ export default function Page() {
           <form onSubmit={handleSubmit} style={{ width: "100%" }}>
             <TextField
               label="First Name"
-              name="firstname"
-              value={form.firstname}
+              name="firstName"
+              value={form.firstName ?? ''}
               onChange={handleChange}
               fullWidth
               margin="normal"
@@ -71,8 +88,8 @@ export default function Page() {
             />
             <TextField
               label="Last Name"
-              name="lastname"
-              value={form.lastname}
+              name="lastName"
+              value={form.lastName ?? ''}
               onChange={handleChange}
               fullWidth
               margin="normal"

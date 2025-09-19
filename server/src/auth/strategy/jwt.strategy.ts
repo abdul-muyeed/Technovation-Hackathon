@@ -11,25 +11,43 @@ import { JwtPayload } from 'src/core/dtos/auth_user.dto';
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     @Inject(jwtConfig.KEY)
-    private JwtConfiguration: ConfigType<typeof jwtConfig>,
+    private jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {
-    //This tells Passport how to extract and verify the JWT token.
-    if (!JwtConfiguration.secret) {
+    // Validate JWT secret exists
+    if (!jwtConfiguration.secret) {
       throw new Error('JWT secret is not defined in the configuration.');
     }
+
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
+        // Extract from cookie first
         (req: Request) => {
-          return req?.cookies?.access_token || null; // <- your cookie name
+          // Debug log
+          const token = req?.cookies?.access_token || null;
+          return token;
         },
+        // Fallback to Authorization header
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET || 'defaultSecret',
+      // FIXED: Use the injected configuration instead of process.env directly
+      secretOrKey: jwtConfiguration.secret,
+      // Add these options for better debugging
+      passReqToCallback: false,
     });
   }
-  // This is where you control what gets attached to req.user
 
-  validate(payload: JwtPayload) {
-    return { id: payload.id, role: payload.role, name: payload.name };
+  // This is where you control what gets attached to req.user
+  async validate(payload: JwtPayload) {
+    // Validate payload structure
+    if (!payload.id || !payload.role) {
+      throw new Error('Invalid JWT payload structure');
+    }
+
+    return {
+      id: payload.id,
+      role: payload.role,
+      name: payload.name,
+    };
   }
 }

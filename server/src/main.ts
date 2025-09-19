@@ -2,11 +2,17 @@ import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationError } from 'class-validator';
+import * as compression from 'compression';
+import * as cookieParser from 'cookie-parser';
+import * as morgan from 'morgan';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(cookieParser());
+  app.use(compression());
+  app.use(morgan('dev'));
   // Enable CORS for all origins
 
   app.enableCors({
@@ -15,6 +21,7 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true, // Allow credentials
   });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

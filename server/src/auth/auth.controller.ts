@@ -24,6 +24,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async loginUser(@Req() req, @Res() res: Response) {
+    console.log('Login request:', req.body);
     const token = await this.authService.login(req.user);
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -53,5 +54,10 @@ export class AuthController {
   @Public()
   async registerUser(@Body() body: RegisterUserDto) {
     return await this.authService.registerUser(body);
+  }
+
+  @Public()
+  async getUser() {
+    return await this.authService.getUsers();
   }
 }

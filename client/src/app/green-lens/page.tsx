@@ -26,7 +26,9 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import RecyclingIcon from "@mui/icons-material/Recycling";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { useAppSelector } from "@/redux/reduxStore";
+import { useAppDispatch, useAppSelector } from "@/redux/reduxStore";
+import { addToBin } from "@/redux/binSlice";
+import { useRouter } from "next/navigation";
 
 type RecyclingInfo = {
   category: string;
@@ -41,6 +43,8 @@ export default function Page() {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const theme = useTheme();
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -52,6 +56,7 @@ export default function Page() {
   const mutation = useMutation({
     mutationFn: uploadImage,
     onSuccess: () => {
+
       toast.success("Successfully uploaded");
     },
     onError: (err: string) => {
@@ -381,6 +386,32 @@ export default function Page() {
           </Box>
         </Paper>
       </Box>
+      {/* ✅ Add to Bin button here */}
+    <Box display="flex" justifyContent="center" mb={10} >
+      <Button
+        variant="contained"
+        color="success"
+        size="large"
+        startIcon={<RecyclingIcon />}
+        sx={{
+          borderRadius: 2,
+          px: 4,
+          py: 1.5,
+          fontWeight: "bold",
+          textTransform: "none",
+        }}
+        onClick={() => {
+          if(mutation.data){
+            dispatch(addToBin(mutation.data));
+          }
+          toast.success("Item added to bin!");
+          // 🔜 Later: Call API / dispatch Redux action here
+        }}
+      >
+        Add to Bin
+      </Button>
+      </Box>
+      
     </Container>
   );
 }

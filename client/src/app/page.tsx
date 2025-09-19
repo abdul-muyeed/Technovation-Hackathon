@@ -27,9 +27,13 @@ export default function Home() {
           <Typography variant="h6" paragraph>
             Your eco-friendly companion for recycling smarter and living greener.
           </Typography>
-          <Button size="large" variant="contained" color="secondary">
-            Get Started
-          </Button>
+          <Link
+          href="/green-lens"
+          >
+            <Button size="large" variant="contained" color="secondary">
+              Get Started
+            </Button>
+          </Link>
         </Container>
       </Box>
 

@@ -1,12 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userReducer from '@/redux/userSlice'
+import binReducer from '@/redux/binSlice'
 import { useDispatch, useSelector } from 'react-redux';
 import { User } from '@/types/types';
 
 export const reduxStore = ({userInitials}:{userInitials: User})=>{
     return configureStore({
         reducer: {
-            user: userReducer
+            user: userReducer,
+            bin: binReducer,
         },
         preloadedState: {
             user: userInitials

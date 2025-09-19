@@ -56,6 +56,19 @@ export default function MainAppBar(){
                 )
             }
             </Link>
+            <Link
+            href='/bin-checkout'
+            >
+            {
+                token && (
+                <>
+                    <Button variant="contained" color="secondary">
+                    bin-checkout
+                    </Button>
+                </>
+                )
+            }
+            </Link>
             {
             token && (
                 <>

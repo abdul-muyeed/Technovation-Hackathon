@@ -31,6 +31,7 @@ export default function Page() {
       const token = data['access_token'];
       dispatch(setUser({userName, token}));
       toast.success('login successfull!');
+      // setEmail("")
       router.push('/');
     },
     onError: (err:string)=>{
@@ -45,6 +46,7 @@ export default function Page() {
       password: password,
       role: 'USER',
     }
+    console.log(form);
     mutation.mutate({form})
   };
 

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   HttpCode,
   HttpStatus,
@@ -12,6 +13,7 @@ import { Response } from 'express';
 import { Public } from 'src/core/decorators';
 import { JwtAuthGuard } from 'src/core/guard';
 import { AuthService } from './auth.service';
+import { RegisterUserDto } from './dto/user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,6 +24,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async loginUser(@Req() req, @Res() res: Response) {
+    console.log('Login request:', req.body);
     const token = await this.authService.login(req.user);
     res.cookie('access_token', token, {
       httpOnly: true,
@@ -45,5 +48,16 @@ export class AuthController {
       message: 'Logout Successfully',
       code: HttpStatus.OK,
     });
+  }
+
+  @Post('register')
+  @Public()
+  async registerUser(@Body() body: RegisterUserDto) {
+    return await this.authService.registerUser(body);
+  }
+
+  @Public()
+  async getUser() {
+    return await this.authService.getUsers();
   }
 }

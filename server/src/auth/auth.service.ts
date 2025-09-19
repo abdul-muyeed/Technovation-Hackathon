@@ -8,7 +8,7 @@ import type { ConfigType } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon from 'argon2';
 import { randomBytes } from 'crypto';
-import { eq } from 'drizzle-orm';
+import { and, eq, InferSelectModel } from 'drizzle-orm';
 import {
   AuthUser,
   LoginCredentials,
@@ -19,6 +19,7 @@ import { DRIZZLE_TOKEN } from 'src/drizzle/drizzle.provider';
 import * as schema from 'src/drizzle/schema';
 import { Database } from 'src/drizzle/schema.type';
 import refresh_jwtConfig from './config/refresh.config';
+import { RegisterUserDto } from './dto/user.dto';
 @Injectable()
 export class AuthService {
   userTable = schema.userSchema;
@@ -31,35 +32,29 @@ export class AuthService {
   ) {}
   // // validate user crendential
   async validateUser(credential: LoginCredentials): Promise<AuthUser> {
-    let user: any;
+    let user: InferSelectModel<typeof schema.userSchema>;
     let userRole: Role;
     if (!credential.username || !credential.password) {
       throw new UnauthorizedException('Username and password are required');
     }
-    switch (credential.role) {
-      case Role.ADMIN:
-        userRole = Role.ADMIN;
-        user = await this.db.query.userSchema.findFirst({
-          where: eq(this.userTable.email, credential.username),
-        });
-        if (!user) {
-          throw new UnauthorizedException('Invalid credential');
-        }
-        break;
-      case Role.USER:
-        userRole = Role.USER;
-      // user = await db(this.doctorTable)
-      //   .select('*')
-      //   .where({
-      //     username: credential.username,
-      //     password: credential.password,
-      //   })
+    const users = await this.db
+      .select()
+      .from(this.userTable)
+      .where(
+        and(
+          eq(this.userTable.email, credential.username),
+          eq(this.userTable.role, credential.role || Role.USER),
+        ),
+      )
+      .limit(1);
+    if (users.length === 0) {
+      throw new UnauthorizedException('Invalid Credential');
     }
-
+    user = users[0];
     return {
-      id: 'user_id_example',
-      name: 'user_name_example',
-      role: Role.USER,
+      id: user!.id,
+      name: user!.email[0],
+      role: user!.role as Role,
     };
   }
   // // generate jwt tokens
@@ -149,5 +144,38 @@ export class AuthService {
     //   throw new UnauthorizedException('Invalid Credential');
     // }
     return payload;
+  }
+
+  async registerUser(body: RegisterUserDto) {
+    const { email, password } = body;
+    const existingUser = await this.db
+      .select()
+      .from(this.userTable)
+      .where(eq(this.userTable.email, email))
+      .limit(1);
+
+    if (existingUser.length > 0) {
+      throw new UnauthorizedException('Email already exists');
+    }
+
+    const hashedPassword = await argon.hash(password);
+    const newUser = {
+      email,
+      password: hashedPassword,
+    };
+
+    const result = await this.db
+      .insert(this.userTable)
+      .values(newUser)
+      .returning();
+
+    return {
+      message: 'User registered successfully',
+      userId: result[0].id,
+    };
+  }
+
+  async getUsers() {
+    return await this.db.query.userSchema.findMany();
   }
 }

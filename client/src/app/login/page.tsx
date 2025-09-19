@@ -8,15 +8,36 @@ import {
   Container,
   Paper,
 } from "@mui/material";
+import { useMutation } from "@tanstack/react-query";
+import loginUser from "@/actions/loginUser";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { loginForm } from "@/types/types";
 
-export default function page() {
+export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const router = useRouter();
+
+  const mutation = useMutation({
+    mutationFn: loginUser,
+    onSuccess: () => {
+      toast.success('login successfull');
+      router.push('/');
+    },
+    onError: (err:string)=>{
+      toast.error(err);
+    }
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here
-    // ...existing code...
+    const form: loginForm = {
+      username: email,
+      password: password,
+    }
+    mutation.mutate({form})
   };
 
   return (
@@ -75,8 +96,9 @@ export default function page() {
                 "&:hover": { bgcolor: "#7b1fa2" },
                 fontWeight: 600,
               }}
+              disabled = {mutation.isPending}
             >
-              Login
+              {mutation.isPending ? 'Loading...' : 'Login'}
             </Button>
           </Box>
         </Paper>

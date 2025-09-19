@@ -22,7 +22,7 @@ import refresh_jwtConfig from './config/refresh.config';
 import { RegisterUserDto } from './dto/user.dto';
 @Injectable()
 export class AuthService {
-  userTable = schema.userSchema;
+  userTable = schema.users;
   constructor(
     private jwtService: JwtService,
     @Inject(refresh_jwtConfig.KEY)
@@ -174,6 +174,6 @@ export class AuthService {
   }
 
   async getUsers() {
-    return await this.db.query.userSchema.findMany();
+    return await this.db.query.users.findMany();
   }
 }

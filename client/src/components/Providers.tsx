@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-query'
 import { Toaster } from 'react-hot-toast';
 import { Provider } from 'react-redux';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 
 
 
@@ -29,8 +30,10 @@ export default function Providers(
     return (
         <QueryClientProvider client={queryClient}>
             <Provider store={store}>
-                <Toaster />
-                {children}
+                <AppRouterCacheProvider>
+                    <Toaster />
+                    {children}
+                </AppRouterCacheProvider>
             </Provider>
         </QueryClientProvider>
     );

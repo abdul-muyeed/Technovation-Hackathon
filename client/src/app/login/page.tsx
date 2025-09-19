@@ -13,17 +13,20 @@ import loginUser from "@/actions/loginUser";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { loginForm } from "@/types/types";
+import { useAppDispatch } from "@/redux/reduxStore";
 
 export default function Page() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const dispatch = useAppDispatch();
+
   const router = useRouter();
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
-      toast.success('login successfull');
+    onSuccess: (data) => {
+      toast.success('login successfull!');
       router.push('/');
     },
     onError: (err:string)=>{
